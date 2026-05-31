@@ -5,6 +5,7 @@ export default function ClassicSummary({
   includeWarmup = false,
   includeCooldown = false,
   includeRest = false,
+  showHr = true,
   title = "Run"
 }) {
   const duration = compactDuration(activity.summary.duration || "-");
@@ -31,12 +32,12 @@ export default function ClassicSummary({
 
         <div className="classic-split-block">
           <p className="classic-split-title">Splits</p>
-          <div className="splits-head classic-splits-head">
+          <div className={`splits-head classic-splits-head${showHr ? "" : " no-hr"}`}>
             <span>{activity?.activityType === "interval_run" ? "Interval" : "Run"}</span>
             <span>Dist</span>
             <span>Pace</span>
             <span aria-hidden="true"></span>
-            <span>HR</span>
+            {showHr ? <span>HR</span> : null}
           </div>
           <div className="splits-list classic-splits-list">
             {splitRows.length ? (
@@ -47,24 +48,24 @@ export default function ClassicSummary({
                     : 22 + ((maxPace - row.paceSeconds) / paceRange) * 78;
                 const width = Math.max(12, Math.min(100, widthRaw));
                 return (
-                <div key={row.id} className="split-row classic-split-row">
+                <div key={row.id} className={`split-row classic-split-row${showHr ? "" : " no-hr"}`}>
                   <span className="split-km">{row.id}</span>
                   <span className="split-distance">{row.distance}</span>
                   <span className="split-pace">{row.pace}</span>
                   <div className="split-bar-wrap classic-split-bar-wrap" aria-hidden="true">
                     <div className="split-bar classic-split-bar" style={{ width: `${width}%` }} />
                   </div>
-                  <span className="split-hr">{row.hr || "-"}</span>
+                  {showHr ? <span className="split-hr">{row.hr || "-"}</span> : null}
                 </div>
                 );
               })
             ) : (
-              <div className="split-row classic-split-row">
+              <div className={`split-row classic-split-row${showHr ? "" : " no-hr"}`}>
                 <span>-</span>
                 <span>-</span>
                 <span>-</span>
                 <span>-</span>
-                <span>-</span>
+                {showHr ? <span>-</span> : null}
               </div>
             )}
           </div>

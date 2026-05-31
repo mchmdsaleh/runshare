@@ -4,7 +4,8 @@ export default function IntervalBreakdown({
   activity,
   includeWarmup = false,
   includeCooldown = false,
-  includeRest = false
+  includeRest = false,
+  showHr = true
 }) {
   const aggregateEdgeSplits = activity?.sourceFormat === "fit";
   const isIntervalRun = activity?.activityType === "interval_run";
@@ -54,12 +55,12 @@ export default function IntervalBreakdown({
     <div className="card-template interval-breakdown splits-card">
       <div className="splits-content">
         <h3 className="splits-title">Splits</h3>
-        <div className="splits-head">
+        <div className={`splits-head${showHr ? "" : " no-hr"}`}>
           <span>{isIntervalRun ? "Interval" : "Run"}</span>
           <span>Dist</span>
           <span>Pace</span>
           <span aria-hidden="true"></span>
-          <span>HR</span>
+          {showHr ? <span>HR</span> : null}
         </div>
 
         <div className="splits-list">
@@ -79,7 +80,7 @@ export default function IntervalBreakdown({
             return (
               <div
                 key={`${row.km}-${index}`}
-                className={`split-row${isFastest ? " split-row-fastest" : ""}`}
+                className={`split-row${isFastest ? " split-row-fastest" : ""}${showHr ? "" : " no-hr"}`}
               >
                 <span className="split-km">{isIntervalRun ? row.km : index + 1}</span>
                 <span className="split-distance">{formatDistance(row.distanceKm)}</span>
@@ -92,7 +93,7 @@ export default function IntervalBreakdown({
                     style={{ width: `${width}%` }}
                   />
                 </div>
-                <span className="split-hr">{row.hr || "-"}</span>
+                {showHr ? <span className="split-hr">{row.hr || "-"}</span> : null}
               </div>
             );
           })}

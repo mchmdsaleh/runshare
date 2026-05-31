@@ -26,6 +26,7 @@ export default function ExportStep({ activity, onBack }) {
   const [includeWarmup, setIncludeWarmup] = useState(false);
   const [includeCooldown, setIncludeCooldown] = useState(false);
   const [includeRest, setIncludeRest] = useState(false);
+  const [hideHr, setHideHr] = useState(false);
   const [customWidth, setCustomWidth] = useState(1080);
   const [customHeight, setCustomHeight] = useState(1920);
   const [busy, setBusy] = useState(false);
@@ -45,6 +46,7 @@ export default function ExportStep({ activity, onBack }) {
           includeWarmup={includeWarmup}
           includeCooldown={includeCooldown}
           includeRest={includeRest}
+          showHr={!hideHr}
         />
       );
     }
@@ -55,6 +57,7 @@ export default function ExportStep({ activity, onBack }) {
           includeWarmup={includeWarmup}
           includeCooldown={includeCooldown}
           includeRest={includeRest}
+          showHr={!hideHr}
           title={classicTitle}
         />
       );
@@ -247,6 +250,21 @@ export default function ExportStep({ activity, onBack }) {
                 </label>
               </div>
             </>
+          ) : null}
+
+          {(selectedTemplate === "interval" || selectedTemplate === "classic") ? (
+            <label className="toggle-item hide-hr-toggle">
+              <input
+                className="toggle-input"
+                type="checkbox"
+                checked={hideHr}
+                onChange={(event) => setHideHr(event.target.checked)}
+              />
+              <span className="toggle-track" aria-hidden="true">
+                <span className="toggle-thumb" />
+              </span>
+              <span className="toggle-label">Hide HR</span>
+            </label>
           ) : null}
 
           <p className="stat-label">Text Preview</p>
