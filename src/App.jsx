@@ -81,6 +81,20 @@ function App() {
     });
   }
 
+  function handleActivityTypeChange(nextType) {
+    setActivity((previous) => {
+      if (!previous) return previous;
+      const forceInterval = nextType === "interval_run";
+      const nextSegments = previous.segments.map((segment) => {
+        if (forceInterval && segment.type === "segment") {
+          return { ...segment, type: "interval" };
+        }
+        return segment;
+      });
+      return rebuildActivityFromSegments(previous, nextSegments, nextType);
+    });
+  }
+
   function handleReset() {
     setStep(1);
     setStatus("Idle");
@@ -107,6 +121,7 @@ function App() {
         {step === 2 && activity ? (
           <PreviewStep
             activity={activity}
+            onActivityTypeChange={handleActivityTypeChange}
             onSegmentChange={handleSegmentChange}
             onSegmentDelete={handleSegmentDelete}
             onConfirm={() => setStep(3)}
@@ -124,14 +139,25 @@ function App() {
 
 export default App;
 
-function rebuildActivityFromSegments(previous, segments) {
+function rebuildActivityFromSegments(previous, segments, forcedActivityType) {
   let rep = 0;
   const normalizedSegments = segments.map((segment) => {
-    if (segment.type === "interval") {
+    const typeNormalized = normalizeType(segment.type);
+    const withType = {
+      ...segment,
+      type: typeNormalized,
+      label:
+        typeNormalized === "warmup"
+          ? "Warm Up"
+          : typeNormalized === "cooldown"
+            ? "Cool Down"
+            : null
+    };
+    if (typeNormalized === "interval") {
       rep += 1;
-      return { ...segment, rep };
+      return { ...withType, rep };
     }
-    return { ...segment, rep: null };
+    return { ...withType, rep: null };
   });
 
   const intervalRows = normalizedSegments.filter((segment) => segment.type === "interval");
@@ -146,7 +172,9 @@ function rebuildActivityFromSegments(previous, segments) {
 
   return {
     ...previous,
-    activityType: intervalRows.length ? "interval_run" : "run",
+    activityType:
+      forcedActivityType || previous.explicitActivityType || (intervalRows.length ? "interval_run" : "run"),
+    explicitActivityType: forcedActivityType || previous.explicitActivityType || null,
     segments: normalizedSegments,
     intervalSummary: {
       repCount: intervalRows.length,
@@ -158,4 +186,9 @@ function rebuildActivityFromSegments(previous, segments) {
       avgRepPace: avgSec != null ? secondsToPace(avgSec) : null
     }
   };
+}
+
+function normalizeType(type) {
+  if (type === "interval" || type === "rest" || type === "warmup" || type === "cooldown") return type;
+  return "segment";
 }

@@ -523,6 +523,20 @@ th {
   outline: none;
 }
 
+.select-field {
+  padding: 2px 8px;
+}
+
+.select-field select {
+  width: 100%;
+  min-width: 86px;
+  background: transparent;
+  border: 0;
+  color: var(--text-0);
+  outline: none;
+  font: inherit;
+}
+
 .icon-button {
   border: 1px solid rgba(132, 157, 201, 0.22);
   background: rgba(12, 20, 38, 0.8);

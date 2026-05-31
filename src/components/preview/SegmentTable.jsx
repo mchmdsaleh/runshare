@@ -1,15 +1,7 @@
 import { Crown, PencilLine, Trash2 } from "lucide-react";
 import { parsePaceToSeconds } from "../../lib/formatUtils";
 
-const TYPE_CLASS = {
-  warmup: "badge warmup",
-  interval: "badge interval",
-  rest: "badge rest",
-  cooldown: "badge cooldown",
-  segment: "badge"
-};
-
-export default function SegmentTable({ activityType, segments, onSegmentChange, onSegmentDelete }) {
+export default function SegmentTable({ segments, onSegmentChange, onSegmentDelete }) {
   const intervalRows = segments.filter((segment) => segment.type === "interval");
   const fastest = intervalRows
     .map((segment) => ({
@@ -38,9 +30,18 @@ export default function SegmentTable({ activityType, segments, onSegmentChange, 
             return (
               <tr key={`${segment.type}-${index}`} className={isFastest ? "row-fastest" : ""}>
                 <td>
-                  <span className={TYPE_CLASS[segment.type] || TYPE_CLASS.segment}>
-                    {displayTypeLabel(segment, activityType)}
-                  </span>
+                  <label className="inline-field select-field">
+                    <select
+                      value={segment.type || "segment"}
+                      onChange={(event) => onSegmentChange(index, "type", event.target.value)}
+                    >
+                      <option value="segment">Run</option>
+                      <option value="interval">Interval</option>
+                      <option value="rest">Rest</option>
+                      <option value="warmup">Warm Up</option>
+                      <option value="cooldown">Cool Down</option>
+                    </select>
+                  </label>
                 </td>
                 <td>{segment.rep ?? "-"}</td>
                 <td>
@@ -80,13 +81,6 @@ export default function SegmentTable({ activityType, segments, onSegmentChange, 
       </table>
     </div>
   );
-}
-
-function displayTypeLabel(segment, activityType) {
-  if (segment.label) return segment.label;
-  if (segment.type === "segment") return "Run";
-  if (segment.type === "interval" && activityType !== "interval_run") return "Run";
-  return segment.type;
 }
 
 function InlineField({ value, onChange }) {

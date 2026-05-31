@@ -4,6 +4,7 @@ import SegmentTable from "./SegmentTable";
 
 export default function PreviewStep({
   activity,
+  onActivityTypeChange,
   onSegmentChange,
   onSegmentDelete,
   onConfirm,
@@ -24,7 +25,15 @@ export default function PreviewStep({
       <div className="grid">
         <article className="stat">
           <p className="stat-label">Activity Type</p>
-          <p className="stat-value">{activity.activityType}</p>
+          <label className="inline-field select-field">
+            <select
+              value={activity.activityType}
+              onChange={(event) => onActivityTypeChange(event.target.value)}
+            >
+              <option value="run">Run</option>
+              <option value="interval_run">Interval Run</option>
+            </select>
+          </label>
         </article>
         <article className="stat">
           <p className="stat-label">Distance</p>
@@ -41,7 +50,6 @@ export default function PreviewStep({
       </div>
 
       <SegmentTable
-        activityType={activity.activityType}
         segments={activity.segments}
         onSegmentChange={onSegmentChange}
         onSegmentDelete={onSegmentDelete}
