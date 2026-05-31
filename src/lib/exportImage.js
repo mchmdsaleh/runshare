@@ -5,63 +5,89 @@ const SIZE_MAP = {
   square: { width: 1080, height: 1080 }
 };
 
+function hideEditingElements(node) {
+  const style = document.createElement("style");
+  style.id = "__export-hide-style";
+  style.textContent = `
+    .custom-layer.active { border-color: transparent !important; }
+    .custom-delete-layer { opacity: 0 !important; pointer-events: none !important; }
+    .custom-resize-handle { opacity: 0 !important; pointer-events: none !important; }
+  `;
+  document.head.appendChild(style);
+  return () => {
+    const styleEl = document.getElementById("__export-hide-style");
+    styleEl?.remove();
+  };
+}
+
 export async function exportCardAsPng(node, options) {
   const size = resolveSize(options);
   const { templateId } = options;
+  const cleanup = hideEditingElements(node);
 
-  const dataUrl = await toPng(node, {
-    backgroundColor: "transparent",
-    pixelRatio: 2,
-    canvasWidth: size.width,
-    canvasHeight: size.height
-  });
+  try {
+    const dataUrl = await toPng(node, {
+      backgroundColor: "transparent",
+      pixelRatio: 2,
+      canvasWidth: size.width,
+      canvasHeight: size.height
+    });
 
-  const filename = `runshare-${templateId}-${size.width}x${size.height}.png`;
-  const link = document.createElement("a");
-  link.href = dataUrl;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
+    const filename = `runshare-${templateId}-${size.width}x${size.height}.png`;
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } finally {
+    cleanup();
+  }
 }
 
 export async function copyCardImageToClipboard(node, options) {
   const size = resolveSize(options);
-  const blob = await toBlob(node, {
-    backgroundColor: "transparent",
-    pixelRatio: 2,
-    canvasWidth: size.width,
-    canvasHeight: size.height
-  });
+  const cleanup = hideEditingElements(node);
 
-  if (!blob) throw new Error("Failed to render PNG blob.");
-  if (!navigator?.clipboard?.write) {
-    throw new Error("Clipboard access requires HTTPS. Make sure you're using a secure connection.");
-  }
-  if (!window.ClipboardItem) throw new Error("Clipboard image is not supported in this browser.");
+  try {
+    const blob = await toBlob(node, {
+      backgroundColor: "transparent",
+      pixelRatio: 2,
+      canvasWidth: size.width,
+      canvasHeight: size.height
+    });
 
-  const ClipboardItemCtor = window.ClipboardItem;
-  const attempts = [
-    () => navigator.clipboard.write([new ClipboardItemCtor({ "image/png": blob })]),
-    () =>
-      navigator.clipboard.write([
-        new ClipboardItemCtor({
-          "image/png": Promise.resolve(blob)
-        })
-      ])
-  ];
-
-  let lastError = null;
-  for (const attempt of attempts) {
-    try {
-      await attempt();
-      return;
-    } catch (error) {
-      lastError = error;
+    if (!blob) throw new Error("Failed to render PNG blob.");
+    if (!navigator?.clipboard?.write) {
+      throw new Error("Clipboard access requires HTTPS. Make sure you're using a secure connection.");
     }
-  }
+    if (!window.ClipboardItem) throw new Error("Clipboard image is not supported in this browser.");
 
-  throw lastError || new Error("Unable to copy image to clipboard.");
+    const ClipboardItemCtor = window.ClipboardItem;
+    const attempts = [
+      () => navigator.clipboard.write([new ClipboardItemCtor({ "image/png": blob })]),
+      () =>
+        navigator.clipboard.write([
+          new ClipboardItemCtor({
+            "image/png": Promise.resolve(blob)
+          })
+        ])
+    ];
+
+    let lastError = null;
+    for (const attempt of attempts) {
+      try {
+        await attempt();
+        return;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error("Unable to copy image to clipboard.");
+  } finally {
+    cleanup();
+  }
 }
 
 function resolveSize(options) {
