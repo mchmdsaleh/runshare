@@ -35,6 +35,9 @@ export async function copyCardImageToClipboard(node, options) {
   });
 
   if (!blob) throw new Error("Failed to render PNG blob.");
+  if (!navigator?.clipboard?.write) {
+    throw new Error("Clipboard access requires HTTPS. Make sure you're using a secure connection.");
+  }
   if (!window.ClipboardItem) throw new Error("Clipboard image is not supported in this browser.");
 
   await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);

@@ -36,10 +36,6 @@ export default function ExportStep({ activity, onBack }) {
 
   const textOutput = useMemo(() => generateText(activity, textStyle), [activity, textStyle]);
   const isIntervalRun = activity?.activityType === "interval_run";
-  const canCopyImage = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return Boolean(window.ClipboardItem && navigator?.clipboard?.write);
-  }, []);
 
   function renderTemplate() {
     if (selectedTemplate === "interval") {
@@ -74,10 +70,6 @@ export default function ExportStep({ activity, onBack }) {
 
   async function handleCopyImage() {
     if (!cardRef.current) return;
-    if (!canCopyImage) {
-      await handleDownload();
-      return;
-    }
     setBusy(true);
     setExportError("");
     try {
@@ -271,7 +263,7 @@ export default function ExportStep({ activity, onBack }) {
             </button>
             <button className="button ghost" type="button" onClick={handleCopyImage} disabled={busy}>
               {busy ? <LoaderCircle size={14} className="spin" /> : <ImagePlus size={14} />}
-              {imageCopied ? "Copied" : canCopyImage ? "Copy" : "Download"}
+              {imageCopied ? "Copied" : "Copy"}
             </button>
             <button className="button" type="button" onClick={handleDownload} disabled={busy}>
               {busy ? <LoaderCircle size={14} className="spin" /> : <Download size={14} />}
