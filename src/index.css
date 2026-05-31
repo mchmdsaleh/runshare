@@ -992,19 +992,19 @@ th {
   }
 
   .classic-splits-head {
-    font-size: 0.58rem;
-    grid-template-columns: 28px 34px 34px minmax(76px, 1fr) 22px;
-    column-gap: 2px;
+    font-size: 0.54rem;
+    grid-template-columns: 34px 36px 32px minmax(72px, 1fr) 24px;
+    column-gap: 4px;
   }
 
   .classic-splits-list .split-row {
-    grid-template-columns: 28px 34px 34px minmax(76px, 1fr) 22px;
-    gap: 1px;
+    grid-template-columns: 34px 36px 32px minmax(72px, 1fr) 24px;
+    gap: 2px;
     font-size: 0.72rem;
   }
 
   .classic-split-bar-wrap {
-    min-width: 76px;
+    min-width: 72px;
     height: 10px;
   }
 }

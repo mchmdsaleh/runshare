@@ -73,8 +73,8 @@ export default function UploadStep({ onFileParse, status, error, fileName }) {
         <div className="dropzone-icon">
           {busy ? <LoaderCircle size={28} className="spin" /> : <FileUp size={28} />}
         </div>
-        <p className="dropzone-title">Drop your CSV here</p>
-        <p className="dropzone-subtitle">CSV or FIT file is supported.</p>
+        <p className="dropzone-title">Drop your file here</p>
+        <p className="dropzone-subtitle">CSV, FIT, or ZIP (first .fit) is supported.</p>
         <div className="upload-row">
           <button className="button" type="button" onClick={triggerPicker} disabled={busy}>
             Choose File
@@ -88,7 +88,7 @@ export default function UploadStep({ onFileParse, status, error, fileName }) {
           id="csv-file"
           className="file-input"
           type="file"
-          accept=".csv,.fit,text/csv"
+          accept=".csv,.fit,.zip,text/csv,application/zip"
           onChange={onInput}
         />
       </div>

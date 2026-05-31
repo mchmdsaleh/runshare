@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { parseCsvFile } from "./lib/csvParser";
 import { parseFitFile } from "./lib/fitParser";
+import { extractFirstFitFromZip } from "./lib/zipFitParser";
 import { normalizeActivity } from "./lib/normalizer";
 import { parsePaceToSeconds, secondsToPace } from "./lib/formatUtils";
 import Header from "./components/layout/Header";
@@ -22,8 +23,9 @@ function App() {
     const lowerName = file.name.toLowerCase();
     const isCsv = lowerName.endsWith(".csv");
     const isFit = lowerName.endsWith(".fit");
-    if (!isCsv && !isFit) {
-      setError("Only .csv and .fit files are supported.");
+    const isZip = lowerName.endsWith(".zip");
+    if (!isCsv && !isFit && !isZip) {
+      setError("Only .csv, .fit, and .zip files are supported.");
       setActivity(null);
       return;
     }
@@ -34,8 +36,9 @@ function App() {
     setActivity(null);
 
     try {
-      if (isFit) {
-        const normalized = await parseFitFile(file);
+      if (isFit || isZip) {
+        const fitFile = isZip ? await extractFirstFitFromZip(file) : file;
+        const normalized = await parseFitFile(fitFile);
         setActivity(normalized);
       } else {
         const parsed = await parseCsvFile(file);
