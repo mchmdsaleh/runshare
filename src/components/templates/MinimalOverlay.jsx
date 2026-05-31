@@ -56,7 +56,9 @@ export default function MinimalOverlay({ activity }) {
           )}
         </div>
 
-        <div className="wordmark strava-wordmark">STRAVA</div>
+        <div className="wordmark strava-wordmark" aria-label="Strava">
+          <img src="/Strava_Logo.svg" alt="Strava" className="strava-logo-svg" draggable="false" />
+        </div>
       </div>
     </div>
   );
