@@ -40,7 +40,28 @@ export async function copyCardImageToClipboard(node, options) {
   }
   if (!window.ClipboardItem) throw new Error("Clipboard image is not supported in this browser.");
 
-  await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+  const ClipboardItemCtor = window.ClipboardItem;
+  const attempts = [
+    () => navigator.clipboard.write([new ClipboardItemCtor({ "image/png": blob })]),
+    () =>
+      navigator.clipboard.write([
+        new ClipboardItemCtor({
+          "image/png": Promise.resolve(blob)
+        })
+      ])
+  ];
+
+  let lastError = null;
+  for (const attempt of attempts) {
+    try {
+      await attempt();
+      return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("Unable to copy image to clipboard.");
 }
 
 function resolveSize(options) {

@@ -85,6 +85,20 @@ export default function ExportStep({ activity, onBack }) {
       setImageCopied(true);
       setTimeout(() => setImageCopied(false), 1400);
     } catch (error) {
+      if (shouldFallbackToDownload(error)) {
+        try {
+          await exportCardAsPng(cardRef.current, {
+            templateId: selectedTemplate,
+            sizePreset,
+            customWidth,
+            customHeight
+          });
+          return;
+        } catch (downloadError) {
+          setExportError(downloadError?.message || "Failed to download image.");
+          return;
+        }
+      }
       setExportError(error?.message || "Failed to copy image.");
     } finally {
       setBusy(false);
@@ -291,5 +305,17 @@ export default function ExportStep({ activity, onBack }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function shouldFallbackToDownload(error) {
+  const message = String(error?.message || "").toLowerCase();
+  const name = String(error?.name || "").toLowerCase();
+  return (
+    name.includes("notallowed") ||
+    message.includes("not allowed") ||
+    message.includes("denied permission") ||
+    message.includes("clipboard image is not supported") ||
+    message.includes("clipboard access requires https")
   );
 }
