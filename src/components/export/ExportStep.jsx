@@ -43,7 +43,7 @@ const CUSTOM_LAYER_LIBRARY = {
   },
   map: { type: "map", label: "Map", x: 12, y: 198, width: 210, height: 76, visible: true },
   splits: { type: "splits", label: "Splits", x: 12, y: 280, width: 230, height: 168, visible: true },
-  logo: { type: "logo", label: "Logo", x: 78, y: 460, width: 96, height: 30, visible: true }
+  logo: { type: "logo", label: "Logo", x: 78, y: 60, width: 96, height: 30, visible: true }
 };
 
 const DEFAULT_CUSTOM_LAYERS = [
