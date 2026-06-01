@@ -955,7 +955,9 @@ th {
 }
 
 .splits-card {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: auto;
+  overflow: visible;
+  min-height: clamp(360px, calc(176px + (var(--split-rows, 9) * 24px)), 860px);
 }
 
 .splits-content {
@@ -1000,6 +1002,7 @@ th {
   display: grid;
   gap: 6px;
   align-content: start;
+  overflow: visible;
 }
 
 .split-row {
@@ -1096,7 +1099,9 @@ th {
   background: transparent;
   border-color: transparent;
   padding: 0;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: auto;
+  overflow: visible;
+  min-height: clamp(420px, calc(292px + (var(--classic-split-rows, 9) * 22px)), 980px);
 }
 
 .classic-content {
@@ -1151,6 +1156,7 @@ th {
   margin-top: 8px;
   display: grid;
   gap: 6px;
+  overflow: visible;
 }
 
 .classic-split-row {
@@ -1393,6 +1399,7 @@ th {
 
   .splits-card {
     width: min(100%, 360px);
+    min-height: clamp(320px, calc(160px + (var(--split-rows, 9) * 20px)), 760px);
   }
 
   .custom-canvas-template {
@@ -1482,5 +1489,9 @@ th {
   .classic-split-bar-wrap {
     min-width: 72px;
     height: 10px;
+  }
+
+  .classic-summary {
+    min-height: clamp(360px, calc(252px + (var(--classic-split-rows, 9) * 20px)), 900px);
   }
 }

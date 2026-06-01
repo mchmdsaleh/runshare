@@ -52,7 +52,10 @@ export default function IntervalBreakdown({
   const fastestPaceSeconds = paceValues.length ? Math.min(...paceValues) : null;
 
   return (
-    <div className="card-template interval-breakdown splits-card">
+    <div
+      className="card-template interval-breakdown splits-card"
+      style={{ "--split-rows": rows.length }}
+    >
       <div className="splits-content">
         <h3 className="splits-title">Splits</h3>
         <div className={`splits-head${showHr ? "" : " no-hr"}`}>

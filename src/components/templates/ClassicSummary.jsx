@@ -21,7 +21,10 @@ export default function ClassicSummary({
   const paceRange = Math.max(maxPace - minPace, 1);
 
   return (
-    <div className="card-template classic-summary">
+    <div
+      className="card-template classic-summary"
+      style={{ "--classic-split-rows": splitRows.length || 1 }}
+    >
       <div className="classic-content">
         <h3 className="classic-title">{title || "Run"}</h3>
         <div className="classic-grid top">
