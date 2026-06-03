@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { parseCsvFile } from "./lib/csvParser";
 import { parseFitFile } from "./lib/fitParser";
 import { extractFirstFitFromZip } from "./lib/zipFitParser";
@@ -9,6 +10,10 @@ import Stepper from "./components/layout/Stepper";
 import UploadStep from "./components/upload/UploadStep";
 import PreviewStep from "./components/preview/PreviewStep";
 import ExportStep from "./components/export/ExportStep";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import GarminSync from "./components/sync/GarminSync";
+import { useAuth } from "./contexts/AuthContext";
 
 function App() {
   const [step, setStep] = useState(1);
@@ -16,6 +21,8 @@ function App() {
   const [error, setError] = useState("");
   const [fileName, setFileName] = useState("");
   const [activity, setActivity] = useState(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   async function handleFileParse(file) {
     if (!file) return;
@@ -56,6 +63,10 @@ function App() {
       setStatus("Parse failed");
       setError(parseError?.message ?? "Unable to parse file.");
     }
+  }
+
+  async function handleApiActivityLoad(file) {
+    await handleFileParse(file);
   }
 
   function handleSegmentChange(index, key, value) {
@@ -108,30 +119,41 @@ function App() {
       <Header />
       <Stepper currentStep={step} />
 
-      <main className="step-stage" key={step}>
-        {step === 1 ? (
-          <UploadStep
-            onFileParse={handleFileParse}
-            status={status}
-            error={error}
-            fileName={fileName}
-          />
-        ) : null}
+      <main className="step-stage">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={
+            <div key={step}>
+              {step === 1 ? (
+                <>
+                  <UploadStep
+                    onFileParse={handleFileParse}
+                    status={status}
+                    error={error}
+                    fileName={fileName}
+                  />
+                  {user && <GarminSync onActivityLoad={handleApiActivityLoad} />}
+                </>
+              ) : null}
 
-        {step === 2 && activity ? (
-          <PreviewStep
-            activity={activity}
-            onActivityTypeChange={handleActivityTypeChange}
-            onSegmentChange={handleSegmentChange}
-            onSegmentDelete={handleSegmentDelete}
-            onConfirm={() => setStep(3)}
-            onReset={handleReset}
-          />
-        ) : null}
+              {step === 2 && activity ? (
+                <PreviewStep
+                  activity={activity}
+                  onActivityTypeChange={handleActivityTypeChange}
+                  onSegmentChange={handleSegmentChange}
+                  onSegmentDelete={handleSegmentDelete}
+                  onConfirm={() => setStep(3)}
+                  onReset={handleReset}
+                />
+              ) : null}
 
-        {step === 3 && activity ? (
-          <ExportStep activity={activity} onBack={() => setStep(2)} />
-        ) : null}
+              {step === 3 && activity ? (
+                <ExportStep activity={activity} onBack={() => setStep(2)} />
+              ) : null}
+            </div>
+          } />
+        </Routes>
       </main>
     </div>
   );
